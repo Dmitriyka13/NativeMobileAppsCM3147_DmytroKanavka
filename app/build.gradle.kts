@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     id("org.jetbrains.kotlin.android")
     alias(libs.plugins.kotlin.compose)
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp") version "2.2.10-2.0.2"
 }
 
 android {
@@ -33,6 +33,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+
     buildFeatures {
         compose = true
     }
@@ -59,25 +64,25 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
 
-// Navigation Compose
+    // Navigation Compose
     implementation("androidx.navigation:navigation-compose:2.8.5")
 
-// Material Icons Extended
+    // Material Icons Extended
     implementation("androidx.compose.material:material-icons-extended:1.7.6")
 
-// Retrofit & Gson for OpenLibrary REST API
+    // Retrofit & Gson for OpenLibrary REST API
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
-// Coil for loading book cover images
+    // Coil for loading book cover images
     implementation("io.coil-kt:coil-compose:2.7.0")
 
-// Room Database for offline persistence
-    val roomVersion = "2.6.1"
+    // Room Database for offline persistence
+    val roomVersion = "2.7.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
-    add("kapt", "androidx.room:room-compiler:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
 
-// WorkManager for background sync (COULD #7)
+    // WorkManager for background sync
     implementation("androidx.work:work-runtime-ktx:2.10.0")
 }
