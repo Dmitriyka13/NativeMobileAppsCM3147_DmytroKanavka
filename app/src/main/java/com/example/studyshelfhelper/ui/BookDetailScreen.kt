@@ -1,7 +1,10 @@
 package com.example.studyshelfhelper.ui
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Delete
@@ -60,7 +64,7 @@ import com.example.studyshelfhelper.model.BookEntity
 import com.example.studyshelfhelper.model.ReadingStatus
 import kotlin.math.roundToInt
 
-// Detail screen allowing users to track page progress, change status, or share progress
+// Detail screen allowing users to track page progress, change status, open on OpenLibrary, or share progress
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun BookDetailScreen(
@@ -278,6 +282,18 @@ fun BookDetailScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
+            // Opens the book page / online reader on OpenLibrary via browser Intent
+            OutlinedButton(
+                onClick = { openBookOnOpenLibrary(context, currentBook) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(imageVector = Icons.AutoMirrored.Filled.OpenInNew, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Read / Preview on OpenLibrary")
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
             Button(
                 onClick = { shareReadingProgress(context, currentBook) },
                 modifier = Modifier.fillMaxWidth()
@@ -313,6 +329,18 @@ fun BookDetailScreen(
                 }
             }
         )
+    }
+}
+
+// Opens the book's OpenLibrary web page for online reading or preview
+private fun openBookOnOpenLibrary(context: Context, book: BookEntity) {
+    val normalizedPath = if (book.id.startsWith("/")) book.id else "/works/${book.id}"
+    val url = "https://openlibrary.org$normalizedPath"
+    val viewIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    try {
+        context.startActivity(viewIntent)
+    } catch (_: ActivityNotFoundException) {
+        Toast.makeText(context, "No browser app found to open link", Toast.LENGTH_SHORT).show()
     }
 }
 
